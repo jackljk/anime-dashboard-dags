@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-from airflow.operators.base_operator import BaseOperator
+from airflow.operators.bash_operator import BashOperator
 
 # Import the functions for ETL
 from anime_top_25.extract import get_top_data
@@ -47,7 +47,7 @@ with DAG(
         dag=dag,
     )
 
-    mark_done = BaseOperator(
+    mark_done = BashOperator(
         task_id='mark_done',
         bash_command='touch /home/ubuntu/done_check/done.marker',
         dag=dag
