@@ -19,7 +19,8 @@ default_args = {
 with DAG(
     'anime_top25_etl',
     default_args=default_args,
-    schedule_interval='@daily',  # or adjust as needed
+    start_date=datetime(2021, 1, 1),
+    schedule_interval=None,  # or adjust as needed
     catchup=False
 ) as dag:
 
