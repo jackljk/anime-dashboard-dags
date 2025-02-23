@@ -210,6 +210,8 @@ services:
       - bash
       - -c
       - airflow
+    volumes:
+      - ./done_check:/home/ubuntu/done_check
 
 
 volumes:
