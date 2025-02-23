@@ -102,7 +102,8 @@ services:
       airflow-init:
         condition: service_completed_successfully
     volumes:
-      - ./done_check:/home/ubuntu/done_check
+      - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+      - /home/ubuntu/done_check:/home/ubuntu/done_check
 
   airflow-scheduler:
     <<: *airflow-common
@@ -118,7 +119,8 @@ services:
       airflow-init:
         condition: service_completed_successfully
     volumes:
-      - ./done_check:/home/ubuntu/done_check
+      - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+      - /home/ubuntu/done_check:/home/ubuntu/done_check
 
   airflow-init:
     <<: *airflow-common
@@ -196,7 +198,8 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
     volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}:/sources
+      - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+      - /home/ubuntu/done_check:/home/ubuntu/done_check
 
   airflow-cli:
     <<: *airflow-common
@@ -211,7 +214,8 @@ services:
       - -c
       - airflow
     volumes:
-      - ./done_check:/home/ubuntu/done_check
+      - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+      - /home/ubuntu/done_check:/home/ubuntu/done_check
 
 
 volumes:
