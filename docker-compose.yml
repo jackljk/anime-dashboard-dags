@@ -52,6 +52,8 @@ x-airflow-common:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    # secret key 
+    AIRFLOW__WEBSERVER__SECRET_KEY: ${SECRET_KEY:-$(openssl rand -hex 32)}
     # For backward compatibility, with Airflow <2.3
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
@@ -61,6 +63,15 @@ x-airflow-common:
     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY}
     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_KEY}
     AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-west-2}
+    # smtp email configuration
+    AIRFLOW__EMAIL__EMAIL_BACKEND: airflow.utils.email.send_email_smtp
+    AIRFLOW__EMAIL__SMTP_HOST: smtp.gmail.com
+    AIRFLOW__EMAIL__SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+    AIRFLOW__EMAIL__SMTP_SSL: ${SMTP_SSL:-false}
+    AIRFLOW__EMAIL__SMTP_USER: ${SMTP_USER}
+    AIRFLOW__EMAIL__SMTP_PASSWORD: ${SMTP_PASSWORD}
+    AIRFLOW__EMAIL__SMTP_PORT: ${SMTP_PORT:-25}
+    AIRFLOW__EMAIL__SMTP_MAIL_FROM: ${SMTP_MAIL_FROM}
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
@@ -103,7 +114,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
-      - /home/ubuntu/done_check:/home/ubuntu/done_check
+      # - /home/ubuntu/done_check:/home/ubuntu/done_check
 
   airflow-scheduler:
     <<: *airflow-common
@@ -120,7 +131,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
-      - /home/ubuntu/done_check:/home/ubuntu/done_check
+      # - /home/ubuntu/done_check:/home/ubuntu/done_check
 
   airflow-init:
     <<: *airflow-common
@@ -199,7 +210,7 @@ services:
     user: "0:0"
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
-      - /home/ubuntu/done_check:/home/ubuntu/done_check
+      # - /home/ubuntu/done_check:/home/ubuntu/done_check
 
   airflow-cli:
     <<: *airflow-common
@@ -215,7 +226,7 @@ services:
       - airflow
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
-      - /home/ubuntu/done_check:/home/ubuntu/done_check
+      # - /home/ubuntu/done_check:/home/ubuntu/done_check
 
 
 volumes:

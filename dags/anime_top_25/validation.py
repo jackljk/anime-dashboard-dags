@@ -1,12 +1,10 @@
-import logging
-
-def validate_transformed_data(ti, **kwargs):
+def validate_transformed_data(**kwargs):
     """
     Validate the extracted data to ensure it meets expected criteria.
     If validation fails, log the error and re-raise the exception to trigger notifications.
     """
     try:
-        data = ti.xcom_pull(task_ids='extract_task_id')
+        data = kwargs['ti'].xcom_pull(task_ids='transform_top_data', key='parsed_data')
         if data is None:
             raise ValueError("No data found from extract task")
         
@@ -39,14 +37,11 @@ def validate_transformed_data(ti, **kwargs):
                 raise ValueError(f"Rank {rank} is missing from the data")
         
         # If all checks pass, log a success message.
-        logging.info("Data validation passed successfully!")
-    
+        return "Data validation passed successfully."    
     except Exception as error:
-        # Log the error with full traceback
-        logging.exception("Data validation failed with error: %s", error)
-        
+        error = "Data validation failed: \n" + str(error)
         # Optionally: Push error details to XCom or a persistent store for later analysis
-        ti.xcom_push(key='validation_error', value=str(error))
+        kwargs['ti'].xcom_push(key='validation_error', value=str(error))
         
         # Re-raise the exception so that Airflow marks the task as failed
         raise
